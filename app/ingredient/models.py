@@ -19,15 +19,11 @@ class Ingredient(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100),index=True)
-    recipe_id: Mapped[int] = mapped_column(ForeignKey("recipe.id", ), index=True)
-    ingredient_id: Mapped[int] = mapped_column(ForeignKey("ingredients.id", index=True))
-    amount: Mapped[float | None] = mapped_column(float, nullable=True)
-    unit: Mapped[str] = mapped_column(String(20))
-    preparation: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    retrieve: Mapped[str] = mapped_column(String(500),nullable=True)
+    
 
 
 
     recipes: Mapped["Recipe"] = relationship(back_populates="ingredients")
-    
-    ingredient: Mapped["Ingredient"] = relationship(back_populates="recipe")
+    ingredient: Mapped[list["Ingredient"]] = relationship(back_populates="recipe")
 
