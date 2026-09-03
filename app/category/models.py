@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from app.models import recipes
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -10,8 +10,9 @@ from sqlalchemy.orm import relationship
 from app.database.base import Base
 
 if TYPE_CHECKING:
-    from app.models.recipes import recipes
-    from app.models.category import Category
+    from app.category import recipes
+    from app.category.models import recipes
+    from app.category.models import Category
 
 class Category(Base):
     __tablename__ = "categories"

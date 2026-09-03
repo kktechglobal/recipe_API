@@ -7,7 +7,7 @@ from app.database.base import Base
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-DATABASE_URL = "postgresql+asyncpg://username:Jombull1@localhost:5432/recipe_API"
+DATABASE_URL = "postgresql+asyncpg://postgres:Jombull123@localhost:5432/Recipe_sbts"
 
 
 engine = create_async_engine(DATABASE_URL, echo=True)
@@ -22,7 +22,12 @@ async def get_session():
 async def init_models():
     """Create any tables that don't already exist."""
 
-    from app import models 
+    from app.recipe import models
+    from app.user import models
+    from app.recipe_step import models
+    from app.ingredient import models
+    from app.category import models
+    
     # Imported for the side effect: defining a model class is what registers its
     # table on Base.metadata, and create_all only creates what's registered.
 

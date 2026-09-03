@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.database.db import init_models, dispose_engine
-from app.routers import recipe, ingredent, description
+#from app.routers import recipe, ingredent, description
 
 
 @asynccontextmanager
@@ -25,9 +25,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Class Demo API", lifespan=lifespan)
 
-app.include_router(recipe.router)
-app.include_router(ingredent.router)
-app.include_router(description.router)
+#app.include_router(recipe.router)
+#app.include_router(ingredent.router)
+#app.include_router(description.router)
 # The feed is not plugged in yet. It only makes sense once we have login, so it
 # waits in reference/feed.py until we cover authentication.
 
