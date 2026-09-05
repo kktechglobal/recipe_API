@@ -1,5 +1,9 @@
 from pydantic import BaseModel, ConfigDict
 
+# =========================
+# RECIPE INGREDIENT SCHEMAS
+# =========================
+
 class RecipeIngredientCreate(BaseModel):
     name: str  # Global ingredient name (e.g., "Flour")
     amount: float | None = None

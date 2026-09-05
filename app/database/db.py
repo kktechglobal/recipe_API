@@ -22,11 +22,11 @@ async def get_session():
 async def init_models():
     """Create any tables that don't already exist."""
 
-    from app.recipe import models
-    from app.user import models
-    from app.recipe_step import models
+    from app.Recipe import models
+    from app.RecipeStep import models
     from app.ingredient import models
     from app.category import models
+    from app.RecipeIngredient import models
     
     # Imported for the side effect: defining a model class is what registers its
     # table on Base.metadata, and create_all only creates what's registered.

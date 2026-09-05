@@ -1,24 +1,48 @@
-from datetime import datetime
 from typing import TYPE_CHECKING
 
-
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy import Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
 
+
 if TYPE_CHECKING:
-    from app.category import recipes
-    from app.category.models import recipes
-    from app.category.models import Category
+    from app.Recipe.models import Recipe
+
 
 class Category(Base):
-    __tablename__ = "categories"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    category_id: Mapped[int] = mapped_column(ForeignKey("primary_key.id"))
+    __tablename__ = "category"
+
+    id: Mapped[int] = mapped_column(Integer,primary_key=True)
+
+    name: Mapped[str] = mapped_column(String(100),nullable=False,unique=True)
+
+    #========================
+    # relationtionship
+    # =========================
+    recipes: Mapped[list["Recipe"]] = relationship(back_populates="category")
 
 
-    recipe: Mapped[list["recipes"]]= relationship("recipe",back_populate ="category")
+# from datetime import datetime
+# from typing import TYPE_CHECKING
+
+
+# from sqlalchemy import ForeignKey, Integer
+# from sqlalchemy.orm import Mapped
+# from sqlalchemy.orm import mapped_column
+# from sqlalchemy.orm import relationship
+
+# from app.database.base import Base
+
+# if TYPE_CHECKING:
+
+#     from app.category.models import Category 
+
+# class Category(Base):
+#     __tablename__ = "category"
+#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+#     category_id: Mapped[int] = mapped_column(ForeignKey("Recipe.id"))
+
+
+#     category: Mapped[list["Category"]]= relationship(back_populates ="recipe")
     

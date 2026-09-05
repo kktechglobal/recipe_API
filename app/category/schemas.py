@@ -1,7 +1,12 @@
 from pydantic import BaseModel, ConfigDict
 
+# =========================
+# CATEGORY SCHEMAS
+# =========================
+
 class CategoryCreate(BaseModel):
     name: str
+
 
 class CategoryResponse(BaseModel):
     id: int
