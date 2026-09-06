@@ -14,51 +14,25 @@ if TYPE_CHECKING:
 class RecipeIngredient(Base):
     __tablename__ = "recipe_ingredients"
 
-    id: Mapped[int] = mapped_column(
-        Integer,
-        primary_key=True
-    )
+    id: Mapped[int] = mapped_column(Integer,primary_key=True)
 
-    recipe_id: Mapped[int] = mapped_column(
-        ForeignKey("Recipe.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    recipe_id: Mapped[int] = mapped_column(ForeignKey("Recipe.id", ondelete="CASCADE"),nullable=False)
 
-    ingredient_id: Mapped[int] = mapped_column(
-        ForeignKey("ingredients.id", ondelete="RESTRICT"),
-        nullable=False
-    )
+    ingredient_id: Mapped[int] = mapped_column(ForeignKey("ingredients.id", ondelete="RESTRICT"),nullable=False)
 
-    amount: Mapped[float | None] = mapped_column(
-        Float,
-        nullable=True
-    )
+    amount: Mapped[float | None] = mapped_column(Float,nullable=True)
 
-    unit: Mapped[str] = mapped_column(
-        String(50),
-        nullable=False
-    )
+    unit: Mapped[str] = mapped_column(String(50),nullable=False)
 
-    preparation: Mapped[str | None] = mapped_column(
-        String(100),
-        nullable=True
-    )
+    preparation: Mapped[str | None] = mapped_column(String(100),nullable=True)
 
-    recipe: Mapped["Recipe"] = relationship(
-        back_populates="recipe_ingredients"
-    )
+    #======================================
+    # relationships
+    #======================================
 
-    ingredient: Mapped["Ingredient"] = relationship(
-        back_populates="recipe_ingredients"
-    )
+    recipe: Mapped["Recipe"] = relationship(back_populates="recipe_ingredients")
 
-
-
-
-
-
-
-
+    ingredient: Mapped["Ingredient"] = relationship(back_populates="recipe_ingredients")
 
 
 

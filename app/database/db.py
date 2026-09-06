@@ -3,6 +3,7 @@ from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
 from app.database.base import Base
+from app.user import models
 
 # ---------------------------------------------------------------------------
 
@@ -27,7 +28,8 @@ async def init_models():
     from app.ingredient import models
     from app.category import models
     from app.RecipeIngredient import models
-    
+    from app.user import models
+
     # Imported for the side effect: defining a model class is what registers its
     # table on Base.metadata, and create_all only creates what's registered.
 

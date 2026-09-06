@@ -16,6 +16,7 @@ from app.RecipeStep.router import router as RecipeStep
 from app.ingredient.router import router as Ingredient
 from app.RecipeIngredient.router import router as RecipeIngredient
 from app.category.routers import router as Category
+from app.user.router import router as user
 
 
 @asynccontextmanager
@@ -34,7 +35,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-
+app.include_router(user)
 app.include_router(Recipe)
 app.include_router(RecipeStep)
 app.include_router(Ingredient)

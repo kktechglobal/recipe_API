@@ -13,33 +13,19 @@ if TYPE_CHECKING:
 class RecipeStep(Base):
     __tablename__ = "recipe_step"
 
-    id: Mapped[int] = mapped_column(
-        Integer,
-        primary_key=True
-    )
+    id: Mapped[int] = mapped_column(Integer,primary_key=True)
 
-    recipe_id: Mapped[int] = mapped_column(
-        ForeignKey("Recipe.id", ondelete="CASCADE"),
-        nullable=False
-    )
+    recipe_id: Mapped[int] = mapped_column(ForeignKey("Recipe.id", ondelete="CASCADE"),nullable=False)
 
-    step_number: Mapped[int] = mapped_column(
-        Integer,
-        nullable=False
-    )
+    step_number: Mapped[int] = mapped_column(Integer,nullable=False)
 
-    instruction: Mapped[str] = mapped_column(
-        String(1000),
-        nullable=False
-    )
+    instruction: Mapped[str] = mapped_column(String(1000),nullable=False)
 
     #========================
     # relationship  
     # =========================
 
-    recipe: Mapped["Recipe"] = relationship(
-        back_populates="recipe_steps"
-    )
+    recipe: Mapped["Recipe"] = relationship(back_populates="recipe_steps")
 
 
 

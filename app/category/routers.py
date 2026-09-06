@@ -2,13 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.dependencies import get_current_user
 from app.database.db import get_session
 from app.category.service import CategoryService
+from app.user.models import User
 
 
 router = APIRouter(
     prefix="/categories",
-    tags=["Categories"]
+    tags=["Categories"],
 )
 
 service = CategoryService()
@@ -22,19 +24,28 @@ class CategoryUpdate(BaseModel):
     name: str
 
 
+# =========================
+# CREATE
+# =========================
+
 @router.post(
     "/",
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
 )
 async def create_category(
     category_data: CategoryCreate,
     db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ):
     return await service.create_category(
         db,
-        category_data.name
+        category_data.name,
     )
 
+
+# =========================
+# GET ALL
+# =========================
 
 @router.get("/")
 async def get_categories(
@@ -43,6 +54,10 @@ async def get_categories(
     return await service.get_categories(db)
 
 
+# =========================
+# GET ONE
+# =========================
+
 @router.get("/{category_id}")
 async def get_category(
     category_id: int,
@@ -50,7 +65,7 @@ async def get_category(
 ):
     category = await service.get_category(
         db,
-        category_id
+        category_id,
     )
 
     if category is None:
@@ -61,17 +76,22 @@ async def get_category(
 
     return category
 
+
+# =========================
+# UPDATE
+# =========================
 
 @router.put("/{category_id}")
 async def update_category(
     category_id: int,
     category_data: CategoryUpdate,
     db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ):
     category = await service.update_category(
         db,
         category_id,
-        category_data.name
+        category_data.name,
     )
 
     if category is None:
@@ -83,17 +103,22 @@ async def update_category(
     return category
 
 
+# =========================
+# DELETE
+# =========================
+
 @router.delete(
     "/{category_id}",
-    status_code=status.HTTP_204_NO_CONTENT
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_category(
     category_id: int,
     db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ):
     deleted = await service.delete_category(
         db,
-        category_id
+        category_id,
     )
 
     if not deleted:
@@ -103,3 +128,113 @@ async def delete_category(
         )
 
     return None
+
+
+
+
+
+# from fastapi import APIRouter, Depends, HTTPException, status
+# from pydantic import BaseModel
+# from sqlalchemy.ext.asyncio import AsyncSession
+
+# from app.database.db import get_session
+# from app.category.service import CategoryService
+
+
+# router = APIRouter(
+#     prefix="/categories",
+#     tags=["Categories"]
+# )
+
+# service = CategoryService()
+
+
+# class CategoryCreate(BaseModel):
+#     name: str
+
+
+# class CategoryUpdate(BaseModel):
+#     name: str
+
+
+# @router.post(
+#     "/",
+#     status_code=status.HTTP_201_CREATED
+# )
+# async def create_category(
+#     category_data: CategoryCreate,
+#     db: AsyncSession = Depends(get_session),
+# ):
+#     return await service.create_category(
+#         db,
+#         category_data.name
+#     )
+
+
+# @router.get("/")
+# async def get_categories(
+#     db: AsyncSession = Depends(get_session),
+# ):
+#     return await service.get_categories(db)
+
+
+# @router.get("/{category_id}")
+# async def get_category(
+#     category_id: int,
+#     db: AsyncSession = Depends(get_session),
+# ):
+#     category = await service.get_category(
+#         db,
+#         category_id
+#     )
+
+#     if category is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="Category not found",
+#         )
+
+#     return category
+
+
+# @router.put("/{category_id}")
+# async def update_category(
+#     category_id: int,
+#     category_data: CategoryUpdate,
+#     db: AsyncSession = Depends(get_session),
+# ):
+#     category = await service.update_category(
+#         db,
+#         category_id,
+#         category_data.name
+#     )
+
+#     if category is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="Category not found",
+#         )
+
+#     return category
+
+
+# @router.delete(
+#     "/{category_id}",
+#     status_code=status.HTTP_204_NO_CONTENT
+# )
+# async def delete_category(
+#     category_id: int,
+#     db: AsyncSession = Depends(get_session),
+# ):
+#     deleted = await service.delete_category(
+#         db,
+#         category_id
+#     )
+
+#     if not deleted:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="Category not found",
+#         )
+
+#     return None

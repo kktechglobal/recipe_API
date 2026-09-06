@@ -1,21 +1,22 @@
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.dependencies import get_current_user
 from app.database.db import get_session
 
 from app.Recipe.schema import (
     RecipeCreate,
     RecipeUpdate,
-    RecipeResponse
+    RecipeResponse,
 )
 
 from app.Recipe.service import RecipeService
+from app.user.models import User
 
 
 router = APIRouter(
     prefix="/recipes",
-    tags=["Recipes"]
+    tags=["Recipes"],
 )
 
 service = RecipeService()
@@ -28,15 +29,17 @@ service = RecipeService()
 @router.post(
     "/",
     response_model=RecipeResponse,
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
 )
 async def create_recipe(
     recipe_in: RecipeCreate,
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ):
     return await service.create_recipe(
         db,
-        recipe_in
+        recipe_in,
+        current_user.id,
     )
 
 
@@ -46,12 +49,29 @@ async def create_recipe(
 
 @router.get(
     "/",
-    response_model=list[RecipeResponse]
+    response_model=list[RecipeResponse],
 )
 async def get_recipes(
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_session),
 ):
     return await service.get_recipes(db)
+
+
+#================== 
+#saerch
+#=================
+@router.get(
+    "/search",
+    response_model=list[RecipeResponse],
+)
+async def search_recipes(
+    name: str,
+    db: AsyncSession = Depends(get_session),
+):
+    return await service.search_recipes(
+        db,
+        name,
+    )
 
 
 # =========================
@@ -60,22 +80,21 @@ async def get_recipes(
 
 @router.get(
     "/{recipe_id}",
-    response_model=RecipeResponse
+    response_model=RecipeResponse,
 )
 async def get_recipe(
     recipe_id: int,
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_session),
 ):
-
     recipe = await service.get_recipe(
         db,
-        recipe_id
+        recipe_id,
     )
 
     if recipe is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Recipe not found"
+            detail="Recipe not found",
         )
 
     return recipe
@@ -87,24 +106,25 @@ async def get_recipe(
 
 @router.put(
     "/{recipe_id}",
-    response_model=RecipeResponse
+    response_model=RecipeResponse,
 )
 async def update_recipe(
     recipe_id: int,
     recipe_in: RecipeUpdate,
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ):
-
     recipe = await service.update_recipe(
         db,
         recipe_id,
-        recipe_in
+        recipe_in,
+        current_user.id,
     )
 
     if recipe is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Recipe not found"
+            detail="Recipe not found",
         )
 
     return recipe
@@ -116,25 +136,168 @@ async def update_recipe(
 
 @router.delete(
     "/{recipe_id}",
-    status_code=status.HTTP_204_NO_CONTENT
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_recipe(
     recipe_id: int,
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ):
-
     deleted = await service.delete_recipe(
         db,
-        recipe_id
+        recipe_id,
+        current_user.id,
     )
 
     if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Recipe not found"
+            detail="Recipe not found",
         )
 
     return None
+
+
+
+
+
+
+# from fastapi import APIRouter, Depends, HTTPException, status
+# from sqlalchemy.ext.asyncio import AsyncSession
+
+# from app.database.db import get_session
+
+# from app.Recipe.schema import (
+#     RecipeCreate,
+#     RecipeUpdate,
+#     RecipeResponse
+# )
+
+# from app.Recipe.service import RecipeService
+
+
+# router = APIRouter(
+#     prefix="/recipes",
+#     tags=["Recipes"]
+# )
+
+# service = RecipeService()
+
+
+# # =========================
+# # CREATE
+# # =========================
+
+# @router.post(
+#     "/",
+#     response_model=RecipeResponse,
+#     status_code=status.HTTP_201_CREATED
+# )
+# async def create_recipe(
+#     recipe_in: RecipeCreate,
+#     db: AsyncSession = Depends(get_session)
+# ):
+#     return await service.create_recipe(
+#         db,
+#         recipe_in
+#     )
+
+
+# # =========================
+# # GET ALL
+# # =========================
+
+# @router.get(
+#     "/",
+#     response_model=list[RecipeResponse]
+# )
+# async def get_recipes(
+#     db: AsyncSession = Depends(get_session)
+# ):
+#     return await service.get_recipes(db)
+
+
+# # =========================
+# # GET ONE
+# # =========================
+
+# @router.get(
+#     "/{recipe_id}",
+#     response_model=RecipeResponse
+# )
+# async def get_recipe(
+#     recipe_id: int,
+#     db: AsyncSession = Depends(get_session)
+# ):
+
+#     recipe = await service.get_recipe(
+#         db,
+#         recipe_id
+#     )
+
+#     if recipe is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="Recipe not found"
+#         )
+
+#     return recipe
+
+
+# # =========================
+# # UPDATE
+# # =========================
+
+# @router.put(
+#     "/{recipe_id}",
+#     response_model=RecipeResponse
+# )
+# async def update_recipe(
+#     recipe_id: int,
+#     recipe_in: RecipeUpdate,
+#     db: AsyncSession = Depends(get_session)
+# ):
+
+#     recipe = await service.update_recipe(
+#         db,
+#         recipe_id,
+#         recipe_in
+#     )
+
+#     if recipe is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="Recipe not found"
+#         )
+
+#     return recipe
+
+
+# # =========================
+# # DELETE
+# # =========================
+
+# @router.delete(
+#     "/{recipe_id}",
+#     status_code=status.HTTP_204_NO_CONTENT
+# )
+# async def delete_recipe(
+#     recipe_id: int,
+#     db: AsyncSession = Depends(get_session)
+# ):
+
+#     deleted = await service.delete_recipe(
+#         db,
+#         recipe_id
+#     )
+
+#     if not deleted:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="Recipe not found"
+#         )
+
+#     return None
 
 
 
